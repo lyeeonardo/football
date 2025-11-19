@@ -1,0 +1,55 @@
+workspace:
+  raw_video_root: "data/raw_videos"   # drop MP4s here (flat) or use <session>/<camera>/ subfolders
+  catalog_manifest: "records/raw_sessions.yaml"
+  frames_root: "images/raw"
+  detections_root: "detections"
+  labels:
+    ball: "datasets/ball/labels"
+  qc_root: "qc"
+  manifests_root: "records"
+  splits_root: "records/splits"
+  visualizations_root: "artifacts/visualizations"
+
+frame_extraction:
+  sampling_strategy: "stride"        # stride | fps
+  stride: 3                          # keep every nth frame when strategy=stride
+  target_fps: 10                     # used when strategy=fps
+  image_format: "jpg"
+  quality: 95
+
+teacher_inference:
+  model_name: "yolov8x6.pt"
+  weights_path: null                 # optional custom checkpoint
+  batch_size: 32
+  device: "auto"                     # prefers CUDA or Apple MPS; falls back to CPU if unavailable
+  confidence_threshold: 0.2
+  iou_threshold: 0.7
+  tracker: "bytetrack.yaml"
+  target_class_name: "sports ball"
+  visualization_label: "ball"
+  alias_map:
+    "sports ball": "ball"
+
+postprocessing:
+  ball:
+    confidence_threshold: 0.1
+    hsv_check: false
+    hsv_hue_range: [300, 360]
+    min_saturation: 0.5
+    include_background_frames: false
+
+quality_control:
+  reviewer: "label_studio"
+  priority_rules:
+    - "ball_confidence<0.45"
+    - "ball_missing_for>5_frames"
+
+splits:
+  strategy: "group_by_session"
+  proportions:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  min_images_per_split: 50
+
+dataset_version: "v1.0"

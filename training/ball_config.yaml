@@ -1,0 +1,47 @@
+experiment:
+  name: "ball_yolov8n_v1"
+  output_dir: "artifacts/training"
+  seed: 42
+
+dataset:
+  manifest_path: "records/ball_dataset_v1.0.json"
+  staging_root: "datasets/ball/training_sets"
+
+model:
+  base_weights: "yolov8n.pt"
+  device: "auto"
+
+training:
+  epochs: 100
+  batch: 16
+  imgsz: 640
+  lr0: 0.01
+  lrf: 0.01
+  optimizer: "SGD"
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 3.0
+  patience: 30
+  workers: 4
+  cos_lr: false
+
+augmentation:
+  hsv_h: 0.0
+  hsv_s: 0.6
+  hsv_v: 0.4
+  degrees: 0.0
+  translate: 0.08
+  scale: 0.5
+  shear: 0.0
+  perspective: 0.0
+  flipud: 0.0
+  fliplr: 0.5
+  mosaic: 0.0
+  mixup: 0.0
+
+evaluation:
+  split: "test"
+  name: "test"
+  overrides:
+    save_json: true
+    plots: true
